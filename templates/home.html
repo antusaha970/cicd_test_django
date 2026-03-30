@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+      .card h2 {
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #667eea;
+      }
+      .server-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+      }
+      .info-item {
+        margin-bottom: 12px;
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        border-left: 4px solid #667eea;
+      }
+      .info-label {
+        font-weight: bold;
+        color: #667eea;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+      }
+      .info-value {
+        color: #333;
+        margin-top: 5px;
+        word-break: break-word;
+      }
+      .cicd-description {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+      .stage {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #764ba2;
+      }
+      .stage h3 {
+        color: #764ba2;
+        margin-bottom: 8px;
+      }
+      .stage p {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+      }
+      .tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tool-tag {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+      }
+      .benefits {
+        margin-top: 20px;
+      }
+      .benefits h3 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+      .benefit-list {
+        list-style: none;
+      }
+      .benefit-list li {
+        padding: 8px 0;
+        padding-left: 25px;
+        position: relative;
+        color: #555;
+      }
+      .benefit-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #28a745;
+        font-weight: bold;
+      }
+      .api-section {
+        margin-top: 30px;
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+      .api-section h2 {
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #667eea;
+      }
+      .endpoint {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .method {
+        background: #28a745;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+      .path {
+        font-family: "Courier New", monospace;
+        color: #333;
+        font-weight: bold;
+      }
+      .description {
+        color: #666;
+        margin-left: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>{{ page_title }}</h1>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Server Information</h2>
+          <div class="server-info">
+            {% for key, value in server_info.items %}
+            <div class="info-item">
+              <div class="info-label">{{ key|title }}</div>
+              <div class="info-value">{{ value }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>{{ cicd_info.title }}</h2>
+          <p class="cicd-description">{{ cicd_info.description }}</p>
+
+          <h3 style="color: #333; margin-bottom: 15px">Pipeline Stages</h3>
+          {% for stage in cicd_info.stages %}
+          <div class="stage">
+            <h3>{{ stage.name }}</h3>
+            <p>{{ stage.description }}</p>
+            <div class="tools">
+              {% for tool in stage.tools %}
+              <span class="tool-tag">{{ tool }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="benefits">
+            <h3>Benefits of CI/CD</h3>
+            <ul class="benefit-list">
+              {% for benefit in cicd_info.benefits %}
+              <li>{{ benefit }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="api-section">
+        <h2>Available API Endpoints</h2>
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="path">/api/</span>
+          <span class="description">API Root</span>
+        </div>
+        <div class="endpoint">
+          <span class="method">GET/POST</span>
+          <span class="path">/api/categories/</span>
+          <span class="description">List/Create Categories</span>
+        </div>
+        <div class="endpoint">
+          <span class="method">GET/PUT/DELETE</span>
+          <span class="path">/api/categories/{id}/</span>
+          <span class="description">Retrieve/Update/Delete Category</span>
+        </div>
+        <div class="endpoint">
+          <span class="method">GET/POST</span>
+          <span class="path">/api/products/</span>
+          <span class="description">List/Create Products</span>
+        </div>
+        <div class="endpoint">
+          <span class="method">GET/PUT/DELETE</span>
+          <span class="path">/api/products/{id}/</span>
+          <span class="description">Retrieve/Update/Delete Product</span>
+        </div>
+        <div class="endpoint">
+          <span class="method">GET/POST</span>
+          <span class="path">/api/orders/</span>
+          <span class="description">List/Create Orders</span>
+        </div>
+        <div class="endpoint">
+          <span class="method">GET/PUT/DELETE</span>
+          <span class="path">/api/orders/{id}/</span>
+          <span class="description">Retrieve/Update/Delete Order</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
