@@ -45,6 +45,7 @@ jobs:
             # 1. Pull the latest verified code
             git fetch --all
             git reset --hard origin/master
+            #careful with this cmd as it will delete untracked files
             git clean -fd
 
             # 2. Activate virtual environment
