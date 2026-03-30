@@ -43,7 +43,9 @@ jobs:
             cd /home/ubuntu/cicd_test_django
 
             # 1. Pull the latest verified code
-            git pull origin master
+            git fetch --all
+            git reset --hard origin/master
+            git clean -fd
 
             # 2. Activate virtual environment
             source venv/bin/activate
