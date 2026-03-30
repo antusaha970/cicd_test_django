@@ -94,13 +94,14 @@ def home(request):
             'Reduced manual errors',
             'Improved collaboration',
             'Early bug detection',
-            'Consistent deployment process'
+            'Consistent deployment process',
+            'No human intervention required'
         ]
     }
 
     context = {
         'server_info': server_info,
         'cicd_info': cicd_info,
-        'page_title': 'Django CI/CD Demo'
+        'page_title': 'Django CI/CD'
     }
     return render(request, 'home.html', context)
