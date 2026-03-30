@@ -1,0 +1,61 @@
+name: Django CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master # Triggers on push to master
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12.3" # Match your EC2 Python version
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Django Tests
+        run: |
+          # This runs tests on the ephemeral GitHub runner
+          python manage.py test
+
+  deploy:
+    name: Deploy to EC2
+    needs: test # Strictly waits for tests to pass
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Deployment Script via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/cicd_test_django
+
+            # 1. Pull the latest verified code
+            git pull origin master
+
+            # 2. Activate virtual environment
+            source venv/bin/activate
+
+            # 3. Install any new requirements
+            pip install -r requirements.txt
+
+            # 4. Migrate the production SQLite database
+            python manage.py migrate --noinput
+
+            # 5. Collect new static files for Nginx
+            python manage.py collectstatic --noinput
+
+            # 6. Gracefully restart the Gunicorn daemon to serve new code
+            sudo systemctl restart gunicorn
