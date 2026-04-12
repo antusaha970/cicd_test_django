@@ -6,7 +6,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render
-from .models import Category, Product, Order, OrderItem
+from .models import Category, Product, Order, OrderItem, Counter
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
@@ -105,3 +105,18 @@ def home(request):
         'page_title': 'Django CI/CD'
     }
     return render(request, 'home.html', context)
+
+
+def counter_page(request):
+    """
+    View for the counter page that displays the current counter value.
+    The counter is incremented every 30 seconds by Celery Beat.
+    """
+    # Get or create the counter
+    counter, created = Counter.objects.get_or_create(id=1)
+    
+    context = {
+        'counter': counter,
+        'page_title': 'Live Counter'
+    }
+    return render(request, 'counter.html', context)

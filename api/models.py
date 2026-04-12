@@ -1,6 +1,17 @@
 from django.db import models
 
 
+class Counter(models.Model):
+    value = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Counter: {self.value}"
+
+    class Meta:
+        verbose_name_plural = "Counters"
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)

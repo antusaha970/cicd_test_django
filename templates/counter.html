@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }} - Django CICD</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 2.5rem;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+      }
+
+      .counter-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 40px;
+        margin: 30px 0;
+        color: white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .counter-label {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .counter-value {
+        font-size: 5rem;
+        font-weight: bold;
+        margin: 20px 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+      }
+
+      .counter-value.updated {
+        transform: scale(1.1);
+      }
+
+      .counter-info {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 15px;
+      }
+
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
+        border-radius: 25px;
+        margin-top: 20px;
+        font-size: 0.9rem;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        background: #4ade80;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 30px;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .back-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      .last-updated {
+        color: #888;
+        font-size: 0.9rem;
+        margin-top: 20px;
+      }
+
+      .info-box {
+        background: #f3f4f6;
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        margin-top: 30px;
+        border-radius: 5px;
+        text-align: left;
+      }
+
+      .info-box h3 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
+
+      .info-box p {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .tech-stack {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+      }
+
+      .tech-badge {
+        background: #667eea;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>{{ page_title }}</h1>
+      <p class="subtitle">Powered by Celery & Celery Beat</p>
+
+      <div class="counter-card">
+        <div class="counter-label">Current Count</div>
+        <div class="counter-value" id="counter-value">{{ counter.value }}</div>
+        <div class="counter-info">Increments every 30 seconds</div>
+
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>Celery Worker Active</span>
+        </div>
+      </div>
+
+      <div class="last-updated">
+        Last updated: {{ counter.last_updated|date:"Y-m-d H:i:s" }}
+      </div>
+
+      <div class="info-box">
+        <h3>How It Works</h3>
+        <p>
+          This counter is automatically incremented every 30 seconds using
+          <strong>Celery Beat</strong> (task scheduler) and
+          <strong>Celery Worker</strong>
+          (task executor). The task runs in the background and updates the
+          database.
+        </p>
+        <div class="tech-stack">
+          <span class="tech-badge">Django</span>
+          <span class="tech-badge">Celery</span>
+          <span class="tech-badge">Redis</span>
+          <span class="tech-badge">Celery Beat</span>
+        </div>
+      </div>
+
+      <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
+    </div>
+
+    <script>
+      // Auto-refresh the counter every 5 seconds to show updates
+      let currentValue = {{ counter.value }};
+
+      function updateCounter() {
+          fetch(window.location.href, {
+              headers: {
+                  'X-Requested-With': 'XMLHttpRequest'
+              }
+          })
+          .then(response => response.text())
+          .then(html => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, 'text/html');
+              const newValue = doc.getElementById('counter-value').textContent;
+
+              if (parseInt(newValue) !== currentValue) {
+                  currentValue = parseInt(newValue);
+                  const counterElement = document.getElementById('counter-value');
+                  counterElement.textContent = newValue;
+
+                  // Add animation class
+                  counterElement.classList.add('updated');
+                  setTimeout(() => {
+                      counterElement.classList.remove('updated');
+                  }, 300);
+
+                  // Update last updated time
+                  const lastUpdatedElement = doc.querySelector('.last-updated');
+                  if (lastUpdatedElement) {
+                      document.querySelector('.last-updated').textContent =
+                          lastUpdatedElement.textContent;
+                  }
+              }
+          })
+          .catch(error => console.error('Error updating counter:', error));
+      }
+
+      // Check for updates every 5 seconds
+      setInterval(updateCounter, 5000);
+    </script>
+  </body>
+</html>
